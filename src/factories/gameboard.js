@@ -1,7 +1,3 @@
-// board object for placing ships
-// board object for placing hits
-// function for placing ships
-// function for placing hits
 import Ship from './ship';
 
 class Gameboard {
@@ -96,7 +92,6 @@ class Gameboard {
   placeShip = (coord, length, orientation) => {
     const ship = new Ship(coord, length, orientation);
     const id = this.allShipsInfo.length + 1;
-    const coords = [];
 
     if (orientation === 'horizontal') {
       if (coord[1] + length - 1 > 9) {
@@ -111,7 +106,7 @@ class Gameboard {
         this.boardPlaces[coord[0]][i] = id;
         this.#placeBlastingArea(coord, length, orientation, i);
 
-        coords.push([coord[0], i]);
+        ship.coords.push([coord[0], i]);
       }
     }
 
@@ -128,11 +123,11 @@ class Gameboard {
         this.boardPlaces[i][coord[1]] = id;
         this.#placeBlastingArea(coord, length, orientation, i);
 
-        coords.push([i, coord[1]]);
+        ship.coords.push([i, coord[1]]);
       }
     }
 
-    this.allShipsInfo.push({ id, ship, coords });
+    this.allShipsInfo.push({ id, ship });
   };
 
   receiveAttack = (coord) => {
@@ -144,7 +139,7 @@ class Gameboard {
     const id = this.boardPlaces[coord[0]][coord[1]];
     if (id > 0) {
       const shipInfo = this.allShipsInfo.find((s) => s.id === id);
-      const position = shipInfo.coords.findIndex(
+      const position = shipInfo.ship.coords.findIndex(
         (el) => JSON.stringify(el) === JSON.stringify(coord),
       );
       shipInfo.ship.hit(position);

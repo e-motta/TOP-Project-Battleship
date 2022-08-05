@@ -35,7 +35,7 @@ test('if ship is sunk after calling hit for all positions', () => {
 
 test('if ship has coordinates', () => {
   const ship = new Ship([0, 0], 1, null);
-  expect(ship.coords).toEqual([0, 0]);
+  expect(ship.coord).toEqual([0, 0]);
 });
 
 test('if ship has orientation', () => {

@@ -50,7 +50,6 @@ class Game {
   placePlayerShips = () => {
     if (!localStorage.playerShipsProps) {
       // const playerShipsProps
-      console.log(this.playerGameboard);
     }
 
     this.playerShipsProps.forEach((shipProps) => {
@@ -89,7 +88,7 @@ class Game {
     views.displayBoards();
 
     const playerShipsCoords = this.playerGameboard.allShipsInfo.map(
-      (info) => info.coords,
+      (info) => info.ship.coords,
     );
     views.displayShips(playerShipsCoords, 'player');
     views.listenForAttacks(this);
