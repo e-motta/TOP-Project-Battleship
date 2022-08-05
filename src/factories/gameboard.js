@@ -94,7 +94,7 @@ class Gameboard {
   };
 
   placeShip = (coord, length, orientation) => {
-    const ship = new Ship(length);
+    const ship = new Ship(coord, length, orientation);
     const id = this.allShipsInfo.length + 1;
     const coords = [];
 

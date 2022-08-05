@@ -1,7 +1,9 @@
 // shipLength, hit(), isSunk()
 class Ship {
-  constructor(length) {
+  constructor(coords, length, orientation) {
+    this.coords = coords;
     this.length = this.constructor.setLength(length);
+    this.orientation = orientation;
     this.positions = Array(this.length).fill(0);
   }
 

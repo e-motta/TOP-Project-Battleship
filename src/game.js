@@ -23,7 +23,36 @@ class Game {
     ];
   }
 
+  static randomPlaceShips = (gameboard) => {
+    const lengths = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
+    const orientation = ['horizontal', 'vertical'];
+
+    const retry = (length) => {
+      const coords = [
+        Math.floor(Math.random() * 10),
+        Math.floor(Math.random() * 10),
+      ];
+      const bin = Math.floor(Math.random() * 2);
+
+      try {
+        gameboard.placeShip(coords, length, orientation[bin]);
+      } catch (error) {
+        if (error.message === 'You cannot place ship outside the board'
+        || error.message === 'You cannot place a ship over an existing ship or blasting area') {
+          retry(length);
+        }
+      }
+    };
+
+    lengths.forEach((length) => retry(length));
+  };
+
   placePlayerShips = () => {
+    if (!localStorage.playerShipsProps) {
+      // const playerShipsProps
+      console.log(this.playerGameboard);
+    }
+
     this.playerShipsProps.forEach((shipProps) => {
       this.playerGameboard.placeShip(
         shipProps.coord,
@@ -45,32 +74,6 @@ class Game {
 
     this.computerGameboard.placeShip([3, 2], 1, 'horizontal');
     this.computerGameboard.placeShip([9, 9], 1, 'horizontal');
-  };
-
-  randomPlaceShips = () => {
-    const lengths = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
-    const orientation = ['horizontal', 'vertical'];
-
-    const retry = (length) => {
-      const coords = [
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10),
-      ];
-      const bin = Math.floor(Math.random() * 2);
-
-      try {
-        // this.computerGameboard.placeShip(coords, length, orientation[bin]);
-
-        this.playerGameboard.placeShip(coords, length, orientation[bin]);
-      } catch (error) {
-        if (error.message === 'You cannot place ship outside the board'
-        || error.message === 'You cannot place a ship over an existing ship or blasting area') {
-          retry(length);
-        }
-      }
-    };
-
-    lengths.forEach((length) => retry(length));
   };
 
   setUpNewGame = () => {
