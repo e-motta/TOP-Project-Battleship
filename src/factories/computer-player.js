@@ -17,12 +17,6 @@ class ComputerPlayer extends Player {
     }
     return { coords, hit };
   };
-
-  attackCorner = () => { // todo: remove
-    const coords = [9, 9];
-    const hit = this.attackEnemy(coords);
-    return { coords, hit };
-  };
 }
 
 export default ComputerPlayer;
