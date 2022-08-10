@@ -2,6 +2,7 @@ const views = (() => {
   const createBoard = (player) => {
     const gameboard = document.createElement('div');
     gameboard.classList.add('gameboard');
+    gameboard.classList.add(`${player}-gameboard`);
     for (let i = 0; i < 100; i += 1) {
       const square = document.createElement('div');
       square.classList.add('square');
@@ -23,16 +24,20 @@ const views = (() => {
     const playerGameBoardName = document.createElement('h2');
     playerGameBoardName.textContent = 'Your board';
     const playerGameboard = createBoard('player');
-    playerGameboard.classList.add('player-gameboard');
     gameboardContainer.appendChild(playerGameBoardName);
     gameboardContainer.appendChild(playerGameboard);
 
     const computerGameBoardName = document.createElement('h2');
     computerGameBoardName.textContent = "Computer's board";
     const computerGameBoard = createBoard('computer');
-    computerGameBoard.classList.add('computer-gameboard');
     gameboardContainer.appendChild(computerGameBoardName);
     gameboardContainer.appendChild(computerGameBoard);
+
+    const randomBtn = document.createElement('button');
+    randomBtn.classList.add('random-btn');
+    randomBtn.textContent = 'Randomize ships';
+    const container = document.querySelector('.player-score');
+    container.appendChild(randomBtn);
   };
 
   const displayShips = (allShipsCoords, player) => {
@@ -44,6 +49,78 @@ const views = (() => {
         square.setAttribute('draggable', 'true');
       });
     });
+  };
+
+  const removeShips = (player) => {
+    const allSquares = document.querySelectorAll(`.${player}-square`);
+    allSquares.forEach((square) => {
+      square.classList.remove('ship');
+    });
+  };
+
+  const listenForRandomPlaceShips = (game) => {
+    const randomBtn = document.querySelector('.random-btn');
+    randomBtn.addEventListener('click', () => {
+      game.playerGameboard.resetAllShips();
+      game.playerGameboard.randomPlaceAllShips();
+      const allShipsCoords = game.playerGameboard.allShipsInfo.map(
+        (info) => info.ship.coords,
+      );
+      removeShips('player');
+      displayShips(allShipsCoords, 'player');
+    });
+  };
+
+  const disableClicks = () => {
+    const cover = document.createElement('div');
+    cover.classList.add('cover');
+
+    const computerGameboard = document.querySelector('.computer-gameboard');
+    computerGameboard.appendChild(cover);
+  };
+
+  const enableClicks = () => {
+    const cover = document.querySelector('.cover');
+    const computerGameboard = document.querySelector('.computer-gameboard');
+
+    computerGameboard.removeChild(cover);
+  };
+
+  const initialMessage = () => {
+    disableClicks();
+    const messageContainer = document.createElement('div');
+    messageContainer.classList.add('message-container');
+    messageContainer.classList.add('initial-message');
+
+    const message = document.createElement('h2');
+    const span = document.createElement('span');
+    span.classList.add('iconify');
+    span.setAttribute('data-icon', 'mdi-arrow-left');
+    message.appendChild(span);
+    message.appendChild(document.createTextNode(' Place your ships on the gameboard'));
+    messageContainer.appendChild(message);
+
+    const btn = document.createElement('button');
+    btn.classList.add('btn');
+    btn.classList.add('start-btn');
+    btn.textContent = 'Start game';
+    messageContainer.appendChild(btn);
+    const cover = document.querySelector('.cover');
+    cover.appendChild(messageContainer);
+
+    const startGame = () => {
+      enableClicks();
+      const playerGameboard = document.querySelector('.player-gameboard');
+      const playerCover = document.createElement('div');
+      playerCover.classList.add('player-cover');
+      playerGameboard.appendChild(playerCover);
+
+      const btnContainer = document.querySelector('.player-score');
+      const randomBtn = document.querySelector('.random-btn');
+      btnContainer.removeChild(randomBtn);
+    };
+
+    btn.addEventListener('click', startGame);
   };
 
   const displayScore = (gameboard, player) => {
@@ -71,7 +148,7 @@ const views = (() => {
     content.appendChild(scoreContainer);
   };
 
-  const startNewGame = () => {
+  const restartGame = () => {
     window.location.reload();
   };
 
@@ -90,8 +167,8 @@ const views = (() => {
 
     const btn = document.createElement('button');
     btn.classList.add('btn');
-    btn.textContent = 'Start new game';
-    btn.addEventListener('click', startNewGame);
+    btn.textContent = 'New game';
+    btn.addEventListener('click', restartGame);
 
     modal.appendChild(btn);
 
@@ -138,30 +215,17 @@ const views = (() => {
     }
   };
 
-  const disableClicks = () => {
-    const cover = document.createElement('div');
-    cover.classList.add('cover');
-
-    const computerGameboard = document.querySelector('.computer-gameboard');
-    computerGameboard.appendChild(cover);
-  };
-
-  const enableClicks = () => {
-    const cover = document.querySelector('.cover');
-    const computerGameboard = document.querySelector('.computer-gameboard');
-
-    computerGameboard.removeChild(cover);
-  };
-
   return {
+    listenForRandomPlaceShips,
+    disableClicks,
+    enableClicks,
+    initialMessage,
     displayBoards,
     displayShips,
     displayScore,
     showGameoverMessage,
     listenForAttacks,
     hitSquare,
-    disableClicks,
-    enableClicks,
   };
 })();
 

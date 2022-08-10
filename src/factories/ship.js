@@ -1,4 +1,3 @@
-// shipLength, hit(), isSunk()
 class Ship {
   constructor(coord, length, orientation) {
     this.coord = coord;

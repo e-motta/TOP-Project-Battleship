@@ -27,6 +27,8 @@ class Gameboard {
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
     this.allShipsInfo = [];
+    this.shipsProps = this.setShipsProps();
+    this.selectedShipsProps = null;
   }
 
   #placeBlastingArea = (coord, length, orientation, i) => {
@@ -89,6 +91,34 @@ class Gameboard {
     }
   };
 
+  resetAllShips = () => {
+    this.boardPlaces = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    this.boardHits = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    this.allShipsInfo = [];
+  };
+
   placeShip = (coord, length, orientation) => {
     const ship = new Ship(coord, length, orientation);
     const id = this.allShipsInfo.length + 1;
@@ -128,6 +158,63 @@ class Gameboard {
     }
 
     this.allShipsInfo.push({ id, ship });
+  };
+
+  randomPlaceAllShips = () => {
+    const lengths = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
+    const orientation = ['horizontal', 'vertical'];
+
+    const retry = (length) => {
+      const coords = [
+        Math.floor(Math.random() * 10),
+        Math.floor(Math.random() * 10),
+      ];
+      const bin = Math.floor(Math.random() * 2);
+
+      try {
+        this.placeShip(coords, length, orientation[bin]);
+      } catch (error) {
+        if (error.message === 'You cannot place ship outside the board'
+        || error.message === 'You cannot place a ship over an existing ship or blasting area') {
+          retry(length);
+        }
+      }
+    };
+
+    lengths.forEach((length) => retry(length));
+  };
+
+  setShipsProps = () => {
+    if (this.selectedShipsProps) {
+      localStorage.setItem(JSON.stringify(this.selectedShipsProps));
+      return this.selectedShipsProps;
+    }
+    if (typeof window !== 'undefined'
+      && localStorage.getItem('playerShipsProps')) {
+      return JSON.parse(localStorage.getItem('playerShipsProps'));
+    }
+    return [
+      { coord: [9, 9], length: 1, orientation: 'horizontal' },
+      { coord: [0, 9], length: 1, orientation: 'horizontal' },
+      { coord: [0, 0], length: 4, orientation: 'horizontal' },
+      { coord: [0, 5], length: 3, orientation: 'horizontal' },
+      { coord: [3, 4], length: 3, orientation: 'vertical' },
+      { coord: [8, 0], length: 2, orientation: 'vertical' },
+      { coord: [8, 2], length: 2, orientation: 'vertical' },
+      { coord: [7, 7], length: 2, orientation: 'vertical' },
+      { coord: [3, 0], length: 1, orientation: 'horizontal' },
+      { coord: [3, 2], length: 1, orientation: 'horizontal' },
+    ];
+  };
+
+  placeAllShips = () => {
+    this.shipsProps.forEach((shipProps) => {
+      this.placeShip(
+        shipProps.coord,
+        shipProps.length,
+        shipProps.orientation,
+      );
+    });
   };
 
   receiveAttack = (coord) => {
